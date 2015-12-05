@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 'Samsung:Samsung Pass SDK v1.1.4:21'
+    buildToolsVersion "23.0.1"
+    defaultConfig {
+        applicationId "com.cs492c.bestteamever.cs492c_term_project"
+        minSdkVersion 21
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:support-v4:23.1.0'
+    compile files('libs/pass-v1.1.4.jar')
+    compile files('libs/sdk-v1.0.0.jar')
+    compile 'com.github.haibison:android-lockpattern:7.0.0'
+    compile "com.android.support:appcompat-v7:21.0.+"
+}
