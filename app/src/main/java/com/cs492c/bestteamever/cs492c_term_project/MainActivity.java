@@ -2,6 +2,7 @@ package com.cs492c.bestteamever.cs492c_term_project;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 
@@ -9,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -45,6 +47,7 @@ public class MainActivity extends Activity {
         //Save the pattern in shared preferences
         AlpSettings.Security.setAutoSavePattern(this, true);
 
+
         //Initialization of the fingerprint reader.
         mSpass = new Spass();
         try {
@@ -60,7 +63,7 @@ public class MainActivity extends Activity {
             mSpassFingerprint = new SpassFingerprint(MainActivity.this);
         }
 
-
+        //Initializing some buttons
         final Button fingerPrintButton = (Button) findViewById(R.id.fingerprintButton);
         fingerPrintButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +109,12 @@ public class MainActivity extends Activity {
         unlockPatternButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                comparePattern();
+                if(isPatternSet()) {
+                    comparePattern();
+                } else {
+                    Toast noPattern = Toast.makeText(MainActivity.this, "Please create a pattern first", Toast.LENGTH_SHORT);
+                    noPattern.show();
+                }
             }
         });
 
@@ -125,14 +133,19 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this, ConfigurationActivity.class));
             }
         });
+
+        //Check if the user has started the app before
         checkFirstRun();
 
+        //Make sure NFC is turned on
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         checkNFCEnabled();
+
+
     }
 
     /**
-     * Force to use to turn on NFC.
+     * Force the user to turn on NFC.
      */
     private void checkNFCEnabled() { //TO DO: Keep it on top all the time
         if(!nfcAdapter.isEnabled()) {
@@ -147,6 +160,12 @@ public class MainActivity extends Activity {
                     });
 
             AlertDialog dialog = builder.create();
+            dialog.setOnCancelListener(new Dialog.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    checkNFCEnabled();
+                }
+            });
             dialog.show();
         }
     }
@@ -188,6 +207,7 @@ public class MainActivity extends Activity {
         Intent nfc = new Intent(this, HostApduService.class);
         nfc.putExtra("password", getPassword());
         startService(nfc);
+        startActivity(new Intent(MainActivity.this, TagReaderActivity.class));
     }
 
     private void createNewPattern() {
@@ -258,6 +278,14 @@ public class MainActivity extends Activity {
     }
 
     /**
+     * Check if the user has set a pattern.
+     * @return true if the user has set a pattern else false.
+     */
+    private boolean isPatternSet() {
+        return AlpSettings.Security.getPattern(MainActivity.this) != null;
+    }
+
+    /**
      * Gets the password from shared preferences.
      * @return the current password stored in shared preferences.
      */
@@ -265,13 +293,7 @@ public class MainActivity extends Activity {
         return getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("password", null);
     }
 
-    /**
-     * Sets the password in shared preferences.
-     * @param password the password you want to set.
-     */
-    public void setPassword(String password) {
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putString("password", password).apply();
-    }
+
 
     @Override
     /**
@@ -289,6 +311,16 @@ public class MainActivity extends Activity {
     public void onPause() {
         stopService(new Intent(MainActivity.this, HostApduService.class));
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkNFCEnabled();
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 
 

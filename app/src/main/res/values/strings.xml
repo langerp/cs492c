@@ -15,5 +15,9 @@
     </string>
     <string name="loginButton">Login</string>
     <string name="aiddescription">Some description</string>
-    <string name="servicedesc">An APDU service</string> />
+    <string name="servicedesc">An APDU service</string>
+
+    <string name="title_activity_tag_reader">TagReaderActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string> />
 </resources>

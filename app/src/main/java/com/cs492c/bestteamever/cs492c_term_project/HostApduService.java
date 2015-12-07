@@ -24,14 +24,13 @@ public class HostApduService extends android.nfc.cardemulation.HostApduService {
                 stopSelf();
             }
         }
-        Toast startToast = Toast.makeText(getApplicationContext(), "Starting Service", Toast.LENGTH_SHORT);
-        startToast.show();
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public byte[] processCommandApdu(byte[] commandApdu, Bundle extras) {
         if(selectAidApdu(commandApdu)){
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
             return password.getBytes();
         } else {
             return null;
