@@ -33,5 +33,6 @@
         android:id="@+id/configText"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/passwordText"
-        android:layout_alignEnd="@+id/passwordText" />
+        android:layout_alignEnd="@+id/passwordText"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 </RelativeLayout>

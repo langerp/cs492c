@@ -30,7 +30,9 @@ public class HostApduService extends android.nfc.cardemulation.HostApduService {
     @Override
     public byte[] processCommandApdu(byte[] commandApdu, Bundle extras) {
         if(selectAidApdu(commandApdu)){
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            Intent i = new Intent(this, MainActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
             return password.getBytes();
         } else {
             return null;
