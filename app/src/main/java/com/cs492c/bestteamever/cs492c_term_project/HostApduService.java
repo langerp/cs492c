@@ -32,11 +32,9 @@ public class HostApduService extends android.nfc.cardemulation.HostApduService {
     @Override
     public byte[] processCommandApdu(byte[] commandApdu, Bundle extras) {
         if(selectAidApdu(commandApdu)){
-            Log.i("APDUSERVICE", "APDU recognized successfully");
             return password.getBytes();
         } else {
-            Log.i("APDUSERVICE", "Unknown APDU");
-            return "Error: Unkown APDU".getBytes();
+            return null;
         }
     }
 
@@ -46,6 +44,5 @@ public class HostApduService extends android.nfc.cardemulation.HostApduService {
 
     @Override
     public void onDeactivated(int reason) {
-        Log.i("NFCSERVICE:", "Service stopped with reason: " + reason);
     }
 }

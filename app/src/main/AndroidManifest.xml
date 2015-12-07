@@ -30,8 +30,7 @@
 
         <service
             android:name=".HostApduService"
-            android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:permission="android.permission.BIND_NFC_SERVICE" >
             <intent-filter>
                 <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
@@ -41,7 +40,6 @@
                 android:name="android.nfc.cardemulation.host_apdu_service"
                 android:resource="@xml/apduservice" />
         </service>
-
         <activity android:name=".ConfigurationActivity" >
         </activity>
     </application>

@@ -1,9 +1,13 @@
 package com.cs492c.bestteamever.cs492c_term_project;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,8 +27,9 @@ public class MainActivity extends Activity {
     private SpassFingerprint mSpassFingerprint;
     private Spass mSpass;
     private boolean onReadyIdentify = false;
-    private boolean onReadyEnroll = false;
     boolean isFeatureEnabled = false;
+
+    private NfcAdapter nfcAdapter;
 
     private static final int REQ_CREATE_PATTERN = 1;
     private static final int REQ_ENTER_PATTERN = 2;
@@ -60,37 +65,42 @@ public class MainActivity extends Activity {
         fingerPrintButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (!mSpassFingerprint.hasRegisteredFinger()) {
-                        Log.i("FINGERPRINT", "Please register finger first");
-                        Toast noFingerprintToast = Toast.makeText(getApplicationContext()
-                                , "Please register a fingerprint first", Toast.LENGTH_SHORT);
-                        noFingerprintToast.show();
-                        startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
-                    } else {
-                        if (onReadyIdentify == false) {
-                            onReadyIdentify = true;
-                            try {
-                                mSpassFingerprint.startIdentifyWithDialog(MainActivity.this, listener, true);
-                                Log.i("FINGERPRINT", "Please identify finger to verify you");
-                            } catch (IllegalStateException e) {
-                                onReadyIdentify = false;
-                                Log.i("FINGERPRINT", "Exception: " + e);
-                            }
+                if (!isFeatureEnabled) {
+                    Toast noFingerprintSupport = Toast.makeText(MainActivity.this, "Fingerprinting is not supported on this device"
+                            , Toast.LENGTH_SHORT);
+                    noFingerprintSupport.show();
+                } else {
+                    try {
+                        if (!mSpassFingerprint.hasRegisteredFinger()) {
+                            Log.i("FINGERPRINT", "Please register finger first");
+                            Toast noFingerprintToast = Toast.makeText(getApplicationContext()
+                                    , "Please register a fingerprint first", Toast.LENGTH_SHORT);
+                            noFingerprintToast.show();
+                            startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                         } else {
-                            Log.i("FINGERPRINT", "Please cancel Identify first");
+                            if (onReadyIdentify == false) {
+                                onReadyIdentify = true;
+                                try {
+                                    mSpassFingerprint.startIdentifyWithDialog(MainActivity.this, listener, true);
+                                    Log.i("FINGERPRINT", "Please identify finger to verify you");
+                                } catch (IllegalStateException e) {
+                                    onReadyIdentify = false;
+                                    Log.i("FINGERPRINT", "Exception: " + e);
+                                }
+                            } else {
+                                Log.i("FINGERPRINT", "Please cancel Identify first");
+                            }
                         }
+                    } catch (UnsupportedOperationException e) {
+                        Log.i("FINGERPRINT", "Fingerprint Service is not supported in the device");
+                        Toast failToast = Toast.makeText(getApplicationContext()
+                                , "Fingerprinting is not supported on this device", Toast.LENGTH_SHORT);
+                        failToast.show();
                     }
-                } catch (UnsupportedOperationException e) {
-                    Log.i("FINGERPRINT", "Fingerprint Service is not supported in the device");
-                    Toast failToast = Toast.makeText(getApplicationContext()
-                            , "Fingerprinting is not supported on this device", Toast.LENGTH_SHORT);
-                    failToast.show();
                 }
             }
         });
 
-//        createNewPattern();
 
         final Button unlockPatternButton = (Button) findViewById(R.id.patternButton);
         unlockPatternButton.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +117,38 @@ public class MainActivity extends Activity {
                 createNewPattern();
             }
         });
+
+        final Button changePasswordButton = (Button) findViewById(R.id.changePasswordButton);
+        changePasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ConfigurationActivity.class));
+            }
+        });
         checkFirstRun();
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        checkNFCEnabled();
+    }
+
+    /**
+     * Force to use to turn on NFC.
+     */
+    private void checkNFCEnabled() { //TO DO: Keep it on top all the time
+        if(!nfcAdapter.isEnabled()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("In order for this app to function NFC needs to be enabled." +
+                    " Please enable it first in your settings")
+                    .setNeutralButton("Go to Settings", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }
 
 
@@ -136,16 +177,6 @@ public class MainActivity extends Activity {
         @Override
         public void onStarted() {
             Log.i("FINGERPRINT", "User touched fingerprint sensor!");
-        }
-    };
-    /*
-    Can probably be deleted?
-     */
-    private SpassFingerprint.RegisterListener mRegisterListener = new SpassFingerprint.RegisterListener() {
-
-        @Override
-        public void onFinished() {
-            onReadyEnroll = false;
         }
     };
 
@@ -181,7 +212,7 @@ public class MainActivity extends Activity {
                 switch (resultCode) {
                     case RESULT_OK:
                         // The user passed
-                        Log.i("PATTERN", "Enteredpattern successfully");
+                        Log.i("PATTERN", "Entered pattern successfully");
                         startNFCService();
                         Toast succesToast = Toast.makeText(getApplicationContext()
                                 , "Pattern entered successfully", Toast.LENGTH_SHORT);
@@ -190,6 +221,9 @@ public class MainActivity extends Activity {
                     case RESULT_CANCELED:
                         // The user cancelled the task
                         Log.i("PATTERN", "Pattern was cancelled");
+                        Toast cancelToast = Toast.makeText(getApplicationContext()
+                                , "Pattern cancelled", Toast.LENGTH_SHORT);
+                        cancelToast.show();
                         break;
                     case LockPatternActivity.RESULT_FAILED:
                         // The user failed to enter the pattern
@@ -212,16 +246,14 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Check if the application is started for the first time, OR if no password is set.
+     * Checks if the application is started for the first time, OR if no password is set.
      */
     private void checkFirstRun() {
         boolean firstRun = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean("firstRun", true);
-        if(firstRun){
-            //To some first time instructions on usage
+        if(firstRun || getPassword() == null || getPassword().length() == 0){
+            //some first time instructions on usage
             startActivity(new Intent(MainActivity.this, ConfigurationActivity.class));
-            if(getPassword() != null) {
-                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean("firstRun", false).apply();
-            }
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean("firstRun", false).apply();
         }
     }
 

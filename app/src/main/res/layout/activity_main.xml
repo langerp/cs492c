@@ -48,4 +48,17 @@
         android:background="@color/buttons"
         android:textColor="#ca030000" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change password"
+        android:id="@+id/changePasswordButton"
+        android:layout_above="@+id/fingerprintButton"
+        android:layout_marginBottom="31dp"
+        style="@android:style/ButtonBar"
+        android:background="@color/buttons"
+        android:elegantTextHeight="false"
+        android:layout_alignEnd="@+id/fingerprintButton"
+        android:layout_alignStart="@+id/fingerprintButton" />
+
 </RelativeLayout>

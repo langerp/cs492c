@@ -12,9 +12,8 @@
         android:layout_height="wrap_content"
         android:text="Continue"
         android:id="@+id/configContinueButton"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="119dp" />
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -22,7 +21,17 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/passwordText"
-        android:layout_above="@+id/configContinueButton"
-        android:layout_alignEnd="@+id/configContinueButton"
-        android:layout_marginBottom="104dp" />
+        style="@android:style/TextAppearance.Material.Large"
+        android:layout_below="@+id/configText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please enter your computer&apos;s password in the box below before you continue"
+        android:id="@+id/configText"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/passwordText"
+        android:layout_alignEnd="@+id/passwordText" />
 </RelativeLayout>
