@@ -44,6 +44,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Might be necessary
+
+
         //Save the pattern in shared preferences
         AlpSettings.Security.setAutoSavePattern(this, true);
 
