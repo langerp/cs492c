@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.cs492c.bestteamever.cs492c_term_project.ConfigurationActivity">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Continue"
+        android:id="@+id/configContinueButton"
+        android:layout_below="@+id/passwordText"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Continue"
+    android:id="@+id/otpConfigContinueButton"
+    android:layout_below="@+id/otpText"
+    android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/passwordText"
+        style="@android:style/TextAppearance.Material.Large"
+        android:layout_below="@+id/configText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/otpText"
+        style="@android:style/TextAppearance.Material.Large"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please enter your computer&apos;s password in the box below before you continue"
+        android:id="@+id/configText"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/passwordText"
+        android:layout_alignEnd="@+id/passwordText"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Or enter One Time Password from your friend!"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/configContinueButton"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_alignParentStart="true"
+        android:layout_alignLeft="@+id/configText"
+        android:layout_alignRight="@+id/configText"
+        android:layout_marginTop="46dp" />
+</RelativeLayout>
